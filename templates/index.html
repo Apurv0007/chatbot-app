@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <style>
+        body { font-family: Arial; background: #f0f0f0; padding: 0; margin: 0; }
+        #chatbox { width: 400px; margin: auto; margin-top: 50px; background: white; 
+                   padding: 20px; border-radius: 10px; height: 400px; overflow-y: auto; }
+        .user { color: blue; margin: 5px 0; }
+        .bot { color: green; margin: 5px 0; }
+        #inputArea { width: 400px; margin: auto; margin-top: 10px; text-align: center; }
+        input { width: 70%; padding: 10px; }
+        button { padding: 10px 20px; }
+    </style>
+</head>
+<body>
+
+<div id="chatbox"></div>
+
+<div id="inputArea">
+    <input id="user_input" type="text" placeholder="Type your message">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+async function sendMessage() {
+    let userInput = document.getElementById("user_input").value;
+    if (userInput.trim() === "") return;
+
+    document.getElementById("chatbox").innerHTML += `<div class="user">You: ${userInput}</div>`;
+
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userInput })
+    });
+
+    const data = await response.json();
+    document.getElementById("chatbox").innerHTML += `<div class="bot">Bot: ${data.response}</div>`;
+    document.getElementById("user_input").value = "";
+}
+</script>
+
+</body>
+</html>
