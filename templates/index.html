@@ -24,21 +24,22 @@
 
 <script>
 async function sendMessage() {
-    let userInput = document.getElementById("user_input").value;
-    if (userInput.trim() === "") return;
+    let userMessage = document.getElementById("message").value;
 
-    document.getElementById("chatbox").innerHTML += `<div class="user">You: ${userInput}</div>`;
-
-    const response = await fetch("/chat", {
+    let response = await fetch("/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userInput })
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: userMessage })
     });
 
-    const data = await response.json();
-    document.getElementById("chatbox").innerHTML += `<div class="bot">Bot: ${data.response}</div>`;
-    document.getElementById("user_input").value = "";
+    let data = await response.json();
+
+    // data.reply MUST be used, not data.message or data.bot
+    document.getElementById("reply").innerText = data.reply;
 }
+
 </script>
 
 </body>
