@@ -1,46 +1,38 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Chatbot</title>
-    <style>
-        body { font-family: Arial; background: #f0f0f0; padding: 0; margin: 0; }
-        #chatbox { width: 400px; margin: auto; margin-top: 50px; background: white; 
-                   padding: 20px; border-radius: 10px; height: 400px; overflow-y: auto; }
-        .user { color: blue; margin: 5px 0; }
-        .bot { color: green; margin: 5px 0; }
-        #inputArea { width: 400px; margin: auto; margin-top: 10px; text-align: center; }
-        input { width: 70%; padding: 10px; }
-        button { padding: 10px 20px; }
-    </style>
 </head>
 <body>
+    <h2>Chatbot</h2>
 
-<div id="chatbox"></div>
-
-<div id="inputArea">
-    <input id="user_input" type="text" placeholder="Type your message">
+    <input id="message" type="text" placeholder="Type your message...">
     <button onclick="sendMessage()">Send</button>
-</div>
 
-<script>
-async function sendMessage() {
-    let userMessage = document.getElementById("message").value;
+    <p><strong>Bot:</strong> <span id="reply"></span></p>
 
-    let response = await fetch("/chat", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: userMessage })
-    });
+    <script>
+    async function sendMessage() {
+        const userMessage = document.getElementById("message").value;
 
-    let data = await response.json();
+        if (!userMessage.trim()) return;
 
-    // data.reply MUST be used, not data.message or data.bot
-    document.getElementById("reply").innerText = data.reply;
-}
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: userMessage })
+        });
 
-</script>
+        const data = await response.json();
 
+        // ⚠ Correct key is "reply"
+        document.getElementById("reply").innerText = data.reply;
+
+        document.getElementById("message").value = "";
+    }
+    </script>
 </body>
 </html>
