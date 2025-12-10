@@ -114,49 +114,52 @@
         </div>
     </div>
 
-    <script>
-        async function sendMessage() {
-            const input = document.getElementById("message");
-            const chatBody = document.getElementById("chat-body");
-            const userMessage = input.value.trim();
-            if (!userMessage) return;
+    <script>async function sendMessage() {
+    const input = document.getElementById("message");
+    const chatBody = document.getElementById("chat-body");
+    const userMessage = input.value.trim();
+    if (!userMessage) return;
 
-            // Display user message
-            const userDiv = document.createElement("div");
-            userDiv.className = "message user";
-            userDiv.textContent = userMessage;
-            chatBody.appendChild(userDiv);
+    // Display user message
+    const userDiv = document.createElement("div");
+    userDiv.className = "message user";
+    userDiv.textContent = userMessage;
+    chatBody.appendChild(userDiv);
 
-            // Scroll to bottom
-            chatBody.scrollTop = chatBody.scrollHeight;
+    // Scroll to bottom
+    chatBody.scrollTop = chatBody.scrollHeight;
 
-            // Send message to Flask backend
-            const response = await fetch("/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: userMessage })
-            });
+    // Clear input
+    input.value = "";
+    input.focus();
 
-            const data = await response.json();
+    // Display typing animation
+    const botDiv = document.createElement("div");
+    botDiv.className = "message bot";
+    botDiv.textContent = "Bot is typing...";
+    chatBody.appendChild(botDiv);
+    chatBody.scrollTop = chatBody.scrollHeight;
 
-            // Display bot reply
-            const botDiv = document.createElement("div");
-            botDiv.className = "message bot";
-            botDiv.textContent = data.reply;
-            chatBody.appendChild(botDiv);
+    // Call backend
+    const response = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage })
+    });
 
-            // Scroll to bottom
-            chatBody.scrollTop = chatBody.scrollHeight;
+    const data = await response.json();
 
-            // Clear input
-            input.value = "";
-            input.focus();
-        }
+    // Replace typing text with actual bot reply
+    botDiv.textContent = data.reply;
 
-        // Send message on Enter key
-        document.getElementById("message").addEventListener("keypress", function(e) {
-            if (e.key === "Enter") sendMessage();
-        });
+    // Scroll to bottom again
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+// Send message on Enter key
+document.getElementById("message").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+});
     </script>
 </body>
 </html>
