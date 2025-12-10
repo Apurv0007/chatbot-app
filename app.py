@@ -4,15 +4,13 @@ import os
 
 app = Flask(__name__)
 
-# Use environment variable for safety
-openai.api_key = os.getenv("OPENAI_API_KEY")  # Or "YOUR_API_KEY" for testing
+# Set your OpenAI API key here (or use environment variable)
+openai.api_key = os.getenv("OPENAI_API_KEY")  # safer than hardcoding
 
-# Serve the frontend
 @app.route("/")
 def home():
     return render_template("index.html")
 
-# Chat endpoint
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json()
@@ -22,7 +20,6 @@ def chat():
         return jsonify({"reply": "Please type a message!"})
 
     try:
-        # Call OpenAI GPT
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -32,12 +29,12 @@ def chat():
             max_tokens=150
         )
 
-        # Get the bot's reply
         bot_reply = response.choices[0].message.content.strip()
 
     except Exception as e:
-        bot_reply = "Sorry, something went wrong. Try again."
+        bot_reply = "Sorry, something went wrong."
 
+    # ⚠ Make sure the key is "reply"
     return jsonify({"reply": bot_reply})
 
 if __name__ == "__main__":
